@@ -1,0 +1,8 @@
+[wrap-git]
+url = https://github.com/theretikgm/imguiwrapper
+revision = head
+depth = 1
+
+[provide]
+imguiwrapper = imguiwrapper_dep
+
