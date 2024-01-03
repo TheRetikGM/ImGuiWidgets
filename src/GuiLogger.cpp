@@ -5,6 +5,7 @@
  */
 #include "GuiLogger.h"
 #include "imgui.h"
+#include "ren_utils/basic.h"
 
 using namespace ImWidgets;
 
@@ -15,7 +16,7 @@ GuiLogger::GuiLogger(unsigned log_count, bool auto_scroll, bool pause_logging)
 void GuiLogger::OnLog(const ren_utils::LogInfo &log) {
   if (m_PauseLogging)
     return;
-  m_logs.PushBack({ren_utils::TimeInfo().ToString(), log});
+  m_logs.PushBack({ren_utils::TimeInfo(), log});
   if (m_AutoScroll)
     m_scrollBottom = true;
 }
@@ -53,28 +54,33 @@ void GuiLogger::Draw() {
 
         ImGui::TableNextRow();
         ImGui::TableNextColumn();
-        ImGui::Text("%s", e.timestamp.c_str());
+        ImGui::Text("%4i-%02i-%02i %02i:%02i:%02i",
+            e.timestamp.m_Year, e.timestamp.m_Month, e.timestamp.m_Day,
+            e.timestamp.m_Hour, e.timestamp.m_Minute, e.timestamp.m_Second
+            );
 
         ImGui::TableNextColumn();
         ImGui::Text("%s:%i", e.entry.file.filename().string().c_str(),
                     e.entry.line);
 
         ImGui::TableNextColumn();
-        if (e.entry.level == ren_utils::LogLevel::warning)
-          ImGui::TextColored({1.0f, 1.0f, 0.0f, 1.0f}, "%s",
-                             ren_utils::LOG_LEVEL_STRINGS[(int)e.entry.level]);
-        else if (e.entry.level == ren_utils::LogLevel::error)
-          ImGui::TextColored({1.0f, 0.0f, 0.0f, 1.0f}, "%s",
-                             ren_utils::LOG_LEVEL_STRINGS[(int)e.entry.level]);
-        else if (e.entry.level == ren_utils::LogLevel::info)
-          ImGui::TextColored({0.0f, 1.0f, 1.0f, 1.0f}, "%s",
-                             ren_utils::LOG_LEVEL_STRINGS[(int)e.entry.level]);
-        else if (e.entry.level == ren_utils::LogLevel::critical)
-          ImGui::TextColored({1.0f, 0.0f, 1.0f, 1.0f}, "%s",
-                             ren_utils::LOG_LEVEL_STRINGS[(int)e.entry.level]);
-        else
-          ImGui::TextColored({1.0f, 1.0f, 1.0f, 1.0f}, "%s",
-                             ren_utils::LOG_LEVEL_STRINGS[(int)e.entry.level]);
+        switch (e.entry.level) {
+        case ren_utils::LogLevel::info:
+          ImGui::TextColored({0, 1, 1, 1}, "%s", ren_utils::LOG_LEVEL_STRINGS[(int)e.entry.level]);
+          break;
+        case ren_utils::LogLevel::status:
+          ImGui::TextColored({1, 0, 1, 1}, "%s", ren_utils::LOG_LEVEL_STRINGS[(int)e.entry.level]);
+          break;
+        case ren_utils::LogLevel::warning:
+          ImGui::TextColored({1, 1, 0, 1}, "%s", ren_utils::LOG_LEVEL_STRINGS[(int)e.entry.level]);
+          break;
+        case ren_utils::LogLevel::error:
+          ImGui::TextColored({1, 0, 0, 1}, "%s", ren_utils::LOG_LEVEL_STRINGS[(int)e.entry.level]);
+          break;
+        case ren_utils::LogLevel::critical:
+          ImGui::TextColored({1, 0, 1, 0}, "%s", ren_utils::LOG_LEVEL_STRINGS[(int)e.entry.level]);
+          break;
+        }
 
         ImGui::TableNextColumn();
         ImGui::Text("%s", e.entry.message.c_str());

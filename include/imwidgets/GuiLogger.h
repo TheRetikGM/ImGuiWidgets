@@ -9,13 +9,15 @@
 
 namespace ImWidgets {
   class GuiLogger : public ren_utils::LogListener {
-    struct LogEntry { std::string timestamp; ren_utils::LogInfo entry; };
+    struct LogEntry { ren_utils::TimeInfo timestamp; ren_utils::LogInfo entry; };
   public:
     /// Auto scroll to the last log.
     bool m_AutoScroll = true;
     /// Pause logging output.
     /// @note Logs emitted when paused are lost.
     bool m_PauseLogging = false;
+
+    virtual ~GuiLogger() {}
 
     /**
      * @brief Construct a new instance of GuiLogger

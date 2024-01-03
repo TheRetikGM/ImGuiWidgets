@@ -42,7 +42,7 @@ namespace ImWidgets {
       // ImGui::Text("FPS: %.1f", m_fps);
       char avg_fps[20];
       std::sprintf(avg_fps, "avg. %.1f", m_sampler.GetAvg());
-      ImGui::PlotLines("FPS", &Funcs::value_getter, &m_sampler.GetAvgBuf(), m_sampler.GetAvgBuf().Size(), 0,
+      ImGui::PlotLines("FPS", &Funcs::value_getter, const_cast<ValueArr*>(&m_sampler.GetAvgBuf()), m_sampler.GetAvgBuf().Size(), 0,
                        avg_fps, 0.0f, m_ScaleMax, ImVec2(0.0f, m_PlotWidth));
 
       if (ImGui::BeginPopupContextWindow()) {
